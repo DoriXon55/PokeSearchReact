@@ -12,6 +12,15 @@ const usePokemonApi = (limit = 20) => {
   const [nextPage, setNextPage] = useState(null);
   const [prevPage, setPrevPage] = useState(null);
 
+  const resetSearch = () => {
+    setLoading(true);
+    setError(null);
+    setUrl(`https://pokeapi.co/api/v2/pokemon?limit=${limit}`);
+  };
+
+
+
+
   const searchPokemon = async (nameOrId) => {
     if (!nameOrId) return;
     setLoading(true);
@@ -62,6 +71,7 @@ const usePokemonApi = (limit = 20) => {
     loading,
     error,
     searchPokemon,
+    resetSearch,
     goToNextPage,
     goToPrevPage,
     hasNextPage: Boolean(nextPage),

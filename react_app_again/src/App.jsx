@@ -20,7 +20,7 @@ function App() {
     <BrowserRouter>
       <div className={`min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
         <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
-        <main className="container mx-auto px-4 py-6">
+        <main className="container mx-auto px-4 py-6 min-h-[calc(100vh-132px)]">
           <Routes>
             <Route path="/" element={<HomePage darkMode={darkMode} />} />
           </Routes>

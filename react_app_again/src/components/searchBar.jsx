@@ -8,6 +8,7 @@ const SearchBar = ({onSearch, darkMode}) => {
       onSearch(query);
     }
   };
+  
 
   return (
     <form onSubmit={handleSubmit} className="flex justify-center mb-8">
