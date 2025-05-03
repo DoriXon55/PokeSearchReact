@@ -1,5 +1,5 @@
 import React from 'react';
-import PokemonCard from './pokemonCard';
+import PokemonCard from './PokemonCard';
 
 // Add darkMode to props
 const PokemonList = ({ 

@@ -20,7 +20,7 @@ const PokemonCard = ({ pokemon, darkMode }) => {
           #{pokemon.id}
         </span>
         <img 
-          src={pokemon.sprites.other["official-artwork"].front_default || pokemon.sprites.front_default}
+          src={pokemon.sprites.front_default}
           alt={pokemon.name}
           className="w-32 h-32 mx-auto"
         />
