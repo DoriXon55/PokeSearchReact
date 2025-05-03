@@ -1,44 +1,56 @@
 import React, { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import PokemonList from '../components/PokemonList';
-import SearchBar from '../components/SearchBar';
-import usePokemonApi from '../hooks/usePokemonApi';
+import PokemonList from "../components/PokemonList";
+import SearchBar from "../components/SearchBar";
+import usePokemonApi from "../hooks/usePokemonApi";
 
-const HomePage = () => {
+const HomePage = ({ darkMode }) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const searchQuery = searchParams.get('search') || '';
-  const { 
-    pokemons, 
-    loading, 
-    error, 
+  const searchQuery = searchParams.get("search") || "";
+  const {
+    pokemons,
+    loading,
+    error,
     searchPokemon,
+    resetSearch,
     goToNextPage,
     goToPrevPage,
     hasNextPage,
     hasPrevPage,
-    darkMode
   } = usePokemonApi();
 
   useEffect(() => {
-    if (searchQuery)
-    {
-      searchPokemon(searchQuery);
-    }
+    const fetchData = async () => {
+      if (searchQuery) {
+        await searchPokemon(searchQuery);
+      } else {
+        resetSearch();
+      }
+    };
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
   const handleSearch = (query) => {
-    searchPokemon(query);
-    setSearchParams({search: query});
+    setSearchParams({ search: query });
   };
 
-  
+  const handleReset = () => {
+    setSearchParams({});
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-center">Pokédex</h1>
       {/* Przekaż funkcję searchPokemon jako prop */}
-      <SearchBar onSearch={handleSearch} darkMode={darkMode}/>
+      <SearchBar
+        onSearch={handleSearch}
+        onReset={handleReset}
+        darkMode={darkMode}
+      />
       {/* Przekaż dane i funkcje jako props */}
-      <PokemonList 
+      <PokemonList
         pokemons={pokemons}
         loading={loading}
         error={error}

@@ -1,4 +1,3 @@
-import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -13,13 +12,28 @@ const usePokemonApi = (limit = 20) => {
   const [prevPage, setPrevPage] = useState(null);
 
   const resetSearch = () => {
-    setLoading(true);
-    setError(null);
-    setUrl(`https://pokeapi.co/api/v2/pokemon?limit=${limit}`);
+    axios
+      .get(`https://pokeapi.co/api/v2/pokemon?limit=${limit}`)
+      .then((response) => {
+        setNextPage(response.data.next);
+        setPrevPage(response.data.previous);
+
+        Promise.all(
+          response.data.results.map(async (pokemon) => {
+            const detailResponse = await axios.get(pokemon.url);
+            return detailResponse.data;
+          })
+        ).then((details) => {
+          setPokemons(details);
+          setLoading(false);
+        });
+      })
+      .catch((err) => {
+        setError("Wystąpił błąd podczas pobierania danych o pokemonie");
+        console.error(err);
+        setLoading(false);
+      });
   };
-
-
-
 
   const searchPokemon = async (nameOrId) => {
     if (!nameOrId) return;

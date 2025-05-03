@@ -4,6 +4,7 @@ import {BrowserRouter, Routes, Route} from 'react-router-dom'
 import './App.css'
 import HomePage from './pages/HomePage'
 import { useEffect, useState } from 'react'
+import PokemonDetails from './pages/PokemonDetails'
 
 function App() {
 
@@ -23,6 +24,7 @@ function App() {
         <main className="container mx-auto px-4 py-6 min-h-[calc(100vh-132px)]">
           <Routes>
             <Route path="/" element={<HomePage darkMode={darkMode} />} />
+            <Route path="/pokemon/:id" element={<PokemonDetails darkMode={darkMode} />} />
           </Routes>
         </main>
         <Footer darkMode={darkMode} />

@@ -1,8 +1,11 @@
 import TypeIcon from "./TypeIcon";
+import {Link} from 'react-router-dom';
 
 const PokemonCard = ({ pokemon, darkMode }) => {
   return (
-    <div className={`border rounded-lg p-2 mx-auto my-2 shadow-md flex flex-col items-center 
+
+    <Link to={`/pokemon/${pokemon.id}`} className="block w-full no-underline">
+    <div className={`border rounded-lg p-2 mx-auto shadow-md flex flex-col items-center 
       ${darkMode 
         ? 'border-gray-700 bg-gray-800 text-white hover:shadow-blue-500/70 hover:border-blue-500 hover:-translate-y-1' 
         : 'border-gray-300 bg-white text-black hover:shadow-lg hover:-translate-y-1'}
@@ -34,6 +37,7 @@ const PokemonCard = ({ pokemon, darkMode }) => {
         ))}
       </div>
     </div>
+  </Link>
   );
 };
 

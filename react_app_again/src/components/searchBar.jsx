@@ -1,12 +1,17 @@
 import React, { useState } from "react";
 
-const SearchBar = ({onSearch, darkMode}) => {
+const SearchBar = ({onSearch, onReset, darkMode}) => {
   const [query, setQuery] = useState("");
   const handleSubmit = (e) => {
     e.preventDefault();
     if (query.trim()) {
       onSearch(query);
     }
+  };
+
+  const handleReset = () => {
+    setQuery(""); // Clear the input field
+    onReset(); // Call the parent's reset function
   };
   
 
@@ -29,6 +34,21 @@ const SearchBar = ({onSearch, darkMode}) => {
       >
         Szukaj
       </button>
+
+      <button
+        type="button"
+        onClick={handleReset}
+        className={`px-6 py-2 rounded-r
+          ${darkMode
+            ? 'bg-gray-600 hover:bg-gray-500 text-white'
+            : 'bg-gray-300 hover:bg-gray-400 text-black'
+          }`}
+      >
+        Reset
+      </button>
+
+
+
     </form>
   );
 };
