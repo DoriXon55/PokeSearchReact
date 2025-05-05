@@ -1,9 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import darkLogo from "../assets/website_logo.svg";
-import lightLogo from "../../public/images/favicon.svg";
+import lightLogo from "../assets/favicon.svg";
+import { useAuth } from "../hooks/useAuth";
 
 const Navbar = ({ darkMode, setDarkMode }) => {
+
+
+  const {isAuthenticated, user, logout} = useAuth();
+  const [showDropdown, setShowDropdown] = useState(false);
+  const toggleDropdown = () => setShowDropdown(!showDropdown);
+
+
+
   return (
     <nav
       className={`${
@@ -34,6 +43,58 @@ const Navbar = ({ darkMode, setDarkMode }) => {
           >
             Home
           </Link>
+
+
+          {isAuthenticated ? (
+            <div className="relative">
+              <button onClick={toggleDropdown} className={`flex items-center space-x-1 ${darkMode ? "text-gray-300 hover:text-white" : "text-gray-700 hover:test-gray-900"}`}>
+                <span>{user?.username}</span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+
+              {showDropdown && (
+                <div className={`absolute right-0 mt-2 py-2 w-48 rounded-md shadow-lg ${darkMode ? "bg-gray-700" : "bg-white"}`}>
+                  <Link to="/profile" className={`block px-4 py-2 ${darkMode ? "hover:bg-gray-600" : "hover:bg-gray-100"}`} onClick={() => setShowDropdown(false)}>
+                    My Profile
+                  </Link>
+                  <Link to="/favorites" className={`block px-4 py-2 ${darkMode ? "hover:bg-gray-600" : "hover:bg-gray-100"}`} onClick={() => setShowDropdown(false)}>
+                    Favorites Pokemons
+                  </Link>
+                  <Link to="/teams" className={`block px-4 py-2 ${darkMode ? "hover:bg-gray-600" : "hover:bg-gray-100"}`} onClick={() => setShowDropdown(false)}>
+                    My Teams
+                  </Link>
+
+                  <button onClick={() => {logout(); setShowDropdown(false);}} className={`block w-full text-left px-4 py-2 ${darkMode ? "hover:bg-gray-600" : "hover:bg-gray-100"}`}>
+                    Wyloguj
+                  </button>
+                  </div>
+              )} 
+              </div> ) : (
+                <div className="flex space-x-2">
+              <Link 
+                to="/login"
+                className={`px-3 py-1 rounded ${
+                  darkMode 
+                    ? "bg-blue-600 hover:bg-blue-700 text-white" 
+                    : "bg-blue-500 hover:bg-blue-600 text-white"
+                }`}
+              >
+                Zaloguj
+              </Link>
+              <Link 
+                to="/register"
+                className={`px-3 py-1 rounded ${
+                  darkMode 
+                    ? "bg-gray-700 hover:bg-gray-600 text-white" 
+                    : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+                }`}
+              >
+                Zarejestruj
+              </Link>
+            </div>
+          )}
           <button
             onClick={() => setDarkMode(!darkMode)}
             className="p-2 rounded-full focus:outline-none focus:ring-2"
