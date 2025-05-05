@@ -1,158 +1,327 @@
-import React from "react";
-import { useParams, Link } from "react-router-dom";
-import usePokemonDetails from "../hooks/usePokemonDetails";
-import TypeIcon from "../components/TypeIcon";
-import EvolutionChain from "../components/EvolutionChain";
+import React, { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { pokemonApi, favoritesApi } from '../hooks/api';
+import { useAuth } from '../hooks/useAuth';
+import LoadingSpinner from '../components/LoadingSpinner';
+import EvolutionChain from '../components/EvolutionChain'
+import axios from 'axios'; // Dodany import dla pobierania danych z PokeAPI
 
 const PokemonDetails = ({ darkMode }) => {
   const { id } = useParams();
-  const { pokemon, species, evolutionChain, loading, error } =
-    usePokemonDetails(id);
+  const { isAuthenticated } = useAuth();
+  
+  const [pokemon, setPokemon] = useState(null);
+  const [species, setSpecies] = useState(null); // Dodane dla evolution chain
+  const [evolutionChain, setEvolutionChain] = useState(null); // Dodane dla evolution chain
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
 
-  if (loading)
-    return <p className="text-center text-xl">Loading Pokemons...</p>;
-  if (error) return <p className="text-center text-red-500 text-xl">{error}</p>;
-  if (!pokemon) return null;
+  useEffect(() => {
+    const fetchPokemonDetails = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await pokemonApi.getPokemonDetails(id);
+        setPokemon(response.data);
 
-  const description =
-    species?.flavor_text_entries
-      ?.find((entry) => entry.language.name === "en")
-      ?.flavor_text.replace(/\f/g, " ") || "Brak dostępnego opisu.";
+        if (response.data.species?.url) {
+          try {
+            const speciesResponse = await axios.get(response.data.species.url);
+            setSpecies(speciesResponse.data);
+            
+            if (speciesResponse.data.evolution_chain?.url) {
+              try {
+                const evolutionResponse = await axios.get(speciesResponse.data.evolution_chain.url);
+                setEvolutionChain(evolutionResponse.data);
+              } catch (err) {
+                console.error("Błąd podczas pobierania łańcucha ewolucji:", err);
+              }
+            }
+          } catch (err) {
+            console.error("Błąd podczas pobierania danych gatunku:", err);
+          }
+        }
 
-  const getStatColor = (statName, isDark) => {
-    const colors = {
-      hp: isDark ? "bg-red-500" : "bg-red-400",
-      attack: isDark ? "bg-orange-500" : "bg-orange-400",
-      defense: isDark ? "bg-yellow-500" : "bg-yellow-400",
-      "special-attack": isDark ? "bg-blue-500" : "bg-blue-400",
-      "special-defense": isDark ? "bg-green-500" : "bg-green-400",
-      speed: isDark ? "bg-pink-500" : "bg-pink-400",
+        if (isAuthenticated) {
+          try {
+            const favoriteResponse = await favoritesApi.checkIsFavorite(id);
+            setIsFavorite(favoriteResponse.data);
+          } catch (error) {
+            console.error('Error checking favorite status:', error);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching pokemon details:', error);
+        setError('Wystąpił błąd podczas pobierania szczegółów pokemona');
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    return colors[statName] || (isDark ? "bg-gray-500" : "bg-gray-400");
+    fetchPokemonDetails();
+  }, [id, isAuthenticated]);
+
+  const toggleFavorite = async () => {
+    if (!isAuthenticated || isTogglingFavorite) return;
+    
+    setIsTogglingFavorite(true);
+    try {
+      if (isFavorite) {
+        await favoritesApi.removeFromFavorites(id);
+        setIsFavorite(false);
+      } else {
+        await favoritesApi.addToFavorites(id);
+        setIsFavorite(true);
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      setError(error.response?.data || 'Wystąpił błąd podczas aktualizacji ulubionych');
+    } finally {
+      setIsTogglingFavorite(false);
+    }
+  };
+  
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <LoadingSpinner darkMode={darkMode} />
+      </div>
+    );
+  }
+
+  if (error && !pokemon) {
+    return (
+      <div className={`text-center p-8 ${darkMode ? 'text-red-300' : 'text-red-600'}`}>
+        <p>{error}</p>
+        <Link to="/" className={`mt-4 inline-block px-4 py-2 rounded ${darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white`}>
+          Wróć do strony głównej
+        </Link>
+      </div>
+    );
+  }
+
+  if (!pokemon) {
+    return (
+      <div className={`text-center p-8 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+        <p>Nie znaleziono pokemona o ID: {id}</p>
+        <Link to="/" className={`mt-4 inline-block px-4 py-2 rounded ${darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white`}>
+          Wróć do strony głównej
+        </Link>
+      </div>
+    );
+  }
+
+  const formatId = (id) => {
+    return `#${String(id).padStart(3, '0')}`;
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Link
-        to="/"
-        className={`inline-flex items-center mb-6 ${
-          darkMode
-            ? "text-blue-400 hover:text-blue-300"
-            : "text-blue-600 hover:text-blue-700"
-        }`}
-      >
-        ← Back to list
-      </Link>
-
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="md:w-1/3">
-          <img
-            src={
-              pokemon.sprites.other["official-artwork"].front_default ||
-              pokemon.sprites.front_default
-            }
-            alt={pokemon.name}
-            className="w-full rounded-lg shadow-md"
-          />
-        </div>
-
-        <div className="md:w-2/3">
-          <h1 className="text-3xl font-bold capitalize mb-2">{pokemon.name}</h1>
-          <p className="text-xl opacity-75 mb-4">#{pokemon.id}</p>
-          <div className="flex gap-2 mb-6">
-            {pokemon.types.map((typeInfo) => (
-              <TypeIcon key={typeInfo.type.name} type={typeInfo.type.name} />
-            ))}
-          </div>
-
-          <div
-            className={`p-4 rounded-lg mb-6 ${
-              darkMode ? "bg-gray-800" : "bg-gray-100"
-            }`}
+    <div className="container mx-auto px-4">
+      <div className="flex items-center justify-between mb-6">
+        <Link to="/" className={`${darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'}`}>
+          &larr; Wróć do listy
+        </Link>
+        
+        {isAuthenticated && (
+          <button
+            onClick={toggleFavorite}
+            disabled={isTogglingFavorite}
+            className={`flex items-center px-4 py-2 rounded ${
+              isFavorite
+                ? 'bg-red-500 hover:bg-red-600 text-white'
+                : darkMode 
+                  ? 'bg-gray-700 hover:bg-gray-600 text-white' 
+                  : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+            } ${isTogglingFavorite ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
-            <h2 className="text-xl font-semibold mb-3">Basic Information</h2>
-            <div className="grid grid-cols-2 gap-y-2">
-              <span className="font-medium">Height:</span>
-              <span>{pokemon.height / 10} m</span>
-              <span className="font-medium">Weight:</span>
-              <span>{pokemon.weight / 10} kg</span>
-
-              <span className="font-medium">Abilities:</span>
-              <span>
-                {pokemon.abilities
-                  .map((ability) => ability.ability.name.replace("-", " "))
-                  .join(", ")}
-              </span>
-            </div>
-          </div>
-
-          {species && (
-            <div
-              className={`p-4 rounded-lg ${
-                darkMode ? "bg-gray-800" : "bg-gray-100"
-              }`}
+            {isFavorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}
+            <svg 
+              className={`ml-2 w-5 h-5 ${isFavorite ? 'text-white' : 'text-yellow-500'}`} 
+              fill={isFavorite ? 'currentColor' : 'none'} 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
             >
-              <h2 className="text-xl font-semibold mb-3">About</h2>
-              <p>{description}</p>
-
-              {species.genera?.find((g) => g.language.name === "en") && (
-                <p className="mt-3 italic">
-                  {species.genera.find((g) => g.language.name === "en").genus}
-                </p>
-              )}
-            </div>
-          )}
-
-          <div
-            className={`p-4 rounded-lg mt-6 ${
-              darkMode ? "bg-gray-800" : "bg-gray-100"
-            }`}
-          >
-            <h2 className="text-xl font-semibold mb-3">Base Stats</h2>
-            <div className="space-y-3">
-              {pokemon.stats.map((stat) => (
-                <div key={stat.stat.name} className="flex items-center">
-                  <div className="w-32 font-medium capitalize">
-                    {stat.stat.name.replace("-", " ")}:
-                  </div>
-                  <div className="w-16 text-right mr-3">{stat.base_stat}</div>
-                  <div className="flex-grow">
-                    <div
-                      className={`h-2.5 rounded-full ${getStatColor(
-                        stat.stat.name,
-                        darkMode
-                      )}`}
-                      style={{
-                        width: `${Math.min(100, stat.base_stat / 2.5)}%`,
-                      }}
-                    ></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="mt-8">
-        {evolutionChain && evolutionChain.chain && (
-          <div
-            className={`p-6 rounded-lg mb-6 ${
-              darkMode ? "bg-gray-800" : "bg-gray-100"
-            }`}
-          >
-            <h2 className="text-2xl font-semibold mb-4">Evolutions</h2>
-            <div className="flex justify-center flex-wrap gap-4">
-              <EvolutionChain
-                chain={evolutionChain.chain}
-                darkMode={darkMode}
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth="2" 
+                d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
               />
-            </div>
-          </div>
+            </svg>
+          </button>
         )}
       </div>
+
+      {error && pokemon && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 mb-4 rounded">
+          {error}
+        </div>
+      )}
+      
+      <div className={`rounded-lg overflow-hidden shadow-lg ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
+        <div className="p-6">
+          <div className="flex flex-col md:flex-row">
+            <div className="md:w-1/3 mb-6 md:mb-0 flex justify-center items-start">
+              <img 
+                src={pokemon.sprites.other['official-artwork']?.front_default || pokemon.sprites.front_default} 
+                alt={pokemon.name} 
+                className="w-64 h-64 object-contain"
+              />
+            </div>
+            
+            <div className="md:w-2/3 md:pl-6">
+              <div className="flex items-center mb-4">
+                <h1 className={`text-3xl font-bold capitalize ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                  {pokemon.name}
+                </h1>
+                <span className={`ml-3 text-xl ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {formatId(pokemon.id)}
+                </span>
+              </div>
+              
+              <div className="mb-4">
+                <h2 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Typy</h2>
+                <div className="flex flex-wrap gap-2">
+                  {pokemon.types.map(typeInfo => (
+                    <span 
+                      key={typeInfo.type.name}
+                      className={`px-3 py-1 rounded text-white ${getTypeColor(typeInfo.type.name)}`}
+                    >
+                      {typeInfo.type.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <h2 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Wysokość
+                  </h2>
+                  <p className={`${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                    {pokemon.height / 10} m
+                  </p>
+                </div>
+                <div>
+                  <h2 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Waga
+                  </h2>
+                  <p className={`${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                    {pokemon.weight / 10} kg
+                  </p>
+                </div>
+              </div>
+              
+              {species && species.flavor_text_entries?.find(entry => entry.language.name === "en") && (
+                <div className="mb-4">
+                  <h2 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Opis
+                  </h2>
+                  <p className={`${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                    {species.flavor_text_entries
+                      .find(entry => entry.language.name === "en")
+                      .flavor_text.replace(/\f/g, " ")}
+                  </p>
+                </div>
+              )}
+              
+              <div>
+                <h2 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Statystyki
+                </h2>
+                <div className="space-y-2">
+                  {pokemon.stats.map(stat => (
+                    <div key={stat.stat.name}>
+                      <div className="flex justify-between mb-1">
+                        <span className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                          {getStatName(stat.stat.name)}
+                        </span>
+                        <span className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                          {stat.base_stat}
+                        </span>
+                      </div>
+                      <div className={`w-full h-2 rounded-full ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
+                        <div 
+                          className={`h-2 rounded-full ${getStatColor(stat.stat.name)}`}
+                          style={{ width: `${Math.min(100, (stat.base_stat / 255) * 100)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {evolutionChain && evolutionChain.chain && (
+        <div className={`mt-8 rounded-lg overflow-hidden shadow-lg ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
+          <div className="p-6">
+            <h2 className={`text-2xl font-bold mb-6 text-center ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+              Łańcuch ewolucji
+            </h2>
+            <EvolutionChain chain={evolutionChain.chain} darkMode={darkMode} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
+
+// Funkcje pomocnicze do stylizacji
+function getTypeColor(type) {
+  const types = {
+    normal: 'bg-gray-500',
+    fire: 'bg-red-500',
+    water: 'bg-blue-500',
+    electric: 'bg-yellow-500',
+    grass: 'bg-green-500',
+    ice: 'bg-blue-300',
+    fighting: 'bg-red-700',
+    poison: 'bg-purple-500',
+    ground: 'bg-yellow-700',
+    flying: 'bg-indigo-400',
+    psychic: 'bg-pink-500',
+    bug: 'bg-green-600',
+    rock: 'bg-yellow-800',
+    ghost: 'bg-purple-700',
+    dragon: 'bg-indigo-700',
+    dark: 'bg-gray-800',
+    steel: 'bg-gray-400',
+    fairy: 'bg-pink-300',
+  };
+  
+  return types[type] || 'bg-gray-500';
+}
+
+function getStatName(statName) {
+  const stats = {
+    'hp': 'HP',
+    'attack': 'Atak',
+    'defense': 'Obrona',
+    'special-attack': 'Sp. Atak',
+    'special-defense': 'Sp. Obrona',
+    'speed': 'Szybkość'
+  };
+  
+  return stats[statName] || statName;
+}
+
+function getStatColor(statName) {
+  const stats = {
+    'hp': 'bg-red-500',
+    'attack': 'bg-orange-500',
+    'defense': 'bg-yellow-500',
+    'special-attack': 'bg-blue-500',
+    'special-defense': 'bg-green-500',
+    'speed': 'bg-pink-500'
+  };
+  
+  return stats[statName] || 'bg-gray-500';
+}
 
 export default PokemonDetails;

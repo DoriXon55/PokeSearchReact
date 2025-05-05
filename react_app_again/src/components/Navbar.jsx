@@ -5,19 +5,15 @@ import lightLogo from "../assets/favicon.svg";
 import { useAuth } from "../hooks/useAuth";
 
 const Navbar = ({ darkMode, setDarkMode }) => {
-
-
   const {isAuthenticated, user, logout} = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
   const toggleDropdown = () => setShowDropdown(!showDropdown);
-
-
 
   return (
     <nav
       className={`${
         darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
-      } shadow-md`}
+      } shadow-md relative z-30`}
     >
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <Link to="/" className="flex items-center">
@@ -44,7 +40,6 @@ const Navbar = ({ darkMode, setDarkMode }) => {
             Home
           </Link>
 
-
           {isAuthenticated ? (
             <div className="relative">
               <button onClick={toggleDropdown} className={`flex items-center space-x-1 ${darkMode ? "text-gray-300 hover:text-white" : "text-gray-700 hover:test-gray-900"}`}>
@@ -55,7 +50,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
               </button>
 
               {showDropdown && (
-                <div className={`absolute right-0 mt-2 py-2 w-48 rounded-md shadow-lg ${darkMode ? "bg-gray-700" : "bg-white"}`}>
+                <div className={`absolute right-0 mt-2 py-2 w-48 rounded-md shadow-lg z-50 ${darkMode ? "bg-gray-700" : "bg-white"}`}>
                   <Link to="/profile" className={`block px-4 py-2 ${darkMode ? "hover:bg-gray-600" : "hover:bg-gray-100"}`} onClick={() => setShowDropdown(false)}>
                     My Profile
                   </Link>
@@ -69,10 +64,11 @@ const Navbar = ({ darkMode, setDarkMode }) => {
                   <button onClick={() => {logout(); setShowDropdown(false);}} className={`block w-full text-left px-4 py-2 ${darkMode ? "hover:bg-gray-600" : "hover:bg-gray-100"}`}>
                     Wyloguj
                   </button>
-                  </div>
+                </div>
               )} 
-              </div> ) : (
-                <div className="flex space-x-2">
+            </div>
+          ) : (
+            <div className="flex space-x-2">
               <Link 
                 to="/login"
                 className={`px-3 py-1 rounded ${
