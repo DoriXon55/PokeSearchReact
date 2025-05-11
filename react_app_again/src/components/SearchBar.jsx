@@ -10,8 +10,8 @@ const SearchBar = ({onSearch, onReset, darkMode}) => {
   };
 
   const handleReset = () => {
-    setQuery(""); // Clear the input field
-    onReset(); // Call the parent's reset function
+    setQuery("");
+    onReset();
   };
   
 
@@ -32,7 +32,7 @@ const SearchBar = ({onSearch, onReset, darkMode}) => {
         type="submit"
         className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-r"
       >
-        Szukaj
+        Search
       </button>
 
       <button

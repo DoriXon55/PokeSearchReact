@@ -53,7 +53,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Funkcja wylogowania
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);

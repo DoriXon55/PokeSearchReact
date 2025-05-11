@@ -4,15 +4,15 @@ import { pokemonApi, favoritesApi } from '../hooks/api';
 import { useAuth } from '../hooks/useAuth';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EvolutionChain from '../components/EvolutionChain'
-import axios from 'axios'; // Dodany import dla pobierania danych z PokeAPI
+import axios from 'axios'; 
 
 const PokemonDetails = ({ darkMode }) => {
   const { id } = useParams();
   const { isAuthenticated } = useAuth();
   
   const [pokemon, setPokemon] = useState(null);
-  const [species, setSpecies] = useState(null); // Dodane dla evolution chain
-  const [evolutionChain, setEvolutionChain] = useState(null); // Dodane dla evolution chain
+  const [species, setSpecies] = useState(null); 
+  const [evolutionChain, setEvolutionChain] = useState(null); 
   const [isFavorite, setIsFavorite] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -77,7 +77,7 @@ const PokemonDetails = ({ darkMode }) => {
       }
     } catch (error) {
       console.error('Error toggling favorite:', error);
-      setError(error.response?.data || 'Wystąpił błąd podczas aktualizacji ulubionych');
+      setError(error.response?.data || 'An error occurred while updating your favorites.');
     } finally {
       setIsTogglingFavorite(false);
     }
@@ -96,7 +96,7 @@ const PokemonDetails = ({ darkMode }) => {
       <div className={`text-center p-8 ${darkMode ? 'text-red-300' : 'text-red-600'}`}>
         <p>{error}</p>
         <Link to="/" className={`mt-4 inline-block px-4 py-2 rounded ${darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white`}>
-          Wróć do strony głównej
+          Back to home page
         </Link>
       </div>
     );
@@ -105,9 +105,9 @@ const PokemonDetails = ({ darkMode }) => {
   if (!pokemon) {
     return (
       <div className={`text-center p-8 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-        <p>Nie znaleziono pokemona o ID: {id}</p>
+        <p>No Pokemon with ID found: {id}</p>
         <Link to="/" className={`mt-4 inline-block px-4 py-2 rounded ${darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white`}>
-          Wróć do strony głównej
+          Back to home page
         </Link>
       </div>
     );
@@ -121,7 +121,7 @@ const PokemonDetails = ({ darkMode }) => {
     <div className="container mx-auto px-4">
       <div className="flex items-center justify-between mb-6">
         <Link to="/" className={`${darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'}`}>
-          &larr; Wróć do listy
+          &larr; Back to list
         </Link>
         
         {isAuthenticated && (
@@ -136,7 +136,7 @@ const PokemonDetails = ({ darkMode }) => {
                   : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
             } ${isTogglingFavorite ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
-            {isFavorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}
+            {isFavorite ? 'Delete from favorites' : 'Add to favorites'}
             <svg 
               className={`ml-2 w-5 h-5 ${isFavorite ? 'text-white' : 'text-yellow-500'}`} 
               fill={isFavorite ? 'currentColor' : 'none'} 
@@ -187,7 +187,7 @@ const PokemonDetails = ({ darkMode }) => {
                   {pokemon.types.map(typeInfo => (
                     <span 
                       key={typeInfo.type.name}
-                      className={`px-3 py-1 rounded text-white ${getTypeColor(typeInfo.type.name)}`}
+                      className={`px-3 py-1 rounded text-white ${getTypeColor(typeInfo.type.name)} capitalize`}
                     >
                       {typeInfo.type.name}
                     </span>
@@ -198,7 +198,7 @@ const PokemonDetails = ({ darkMode }) => {
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <h2 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Wysokość
+                    Height
                   </h2>
                   <p className={`${darkMode ? 'text-white' : 'text-gray-800'}`}>
                     {pokemon.height / 10} m
@@ -206,7 +206,7 @@ const PokemonDetails = ({ darkMode }) => {
                 </div>
                 <div>
                   <h2 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Waga
+                    Weight
                   </h2>
                   <p className={`${darkMode ? 'text-white' : 'text-gray-800'}`}>
                     {pokemon.weight / 10} kg
@@ -217,7 +217,7 @@ const PokemonDetails = ({ darkMode }) => {
               {species && species.flavor_text_entries?.find(entry => entry.language.name === "en") && (
                 <div className="mb-4">
                   <h2 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Opis
+                    Description
                   </h2>
                   <p className={`${darkMode ? 'text-white' : 'text-gray-800'}`}>
                     {species.flavor_text_entries
@@ -261,7 +261,7 @@ const PokemonDetails = ({ darkMode }) => {
         <div className={`mt-8 rounded-lg overflow-hidden shadow-lg ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
           <div className="p-6">
             <h2 className={`text-2xl font-bold mb-6 text-center ${darkMode ? 'text-white' : 'text-gray-800'}`}>
-              Łańcuch ewolucji
+              Evolution Chain
             </h2>
             <EvolutionChain chain={evolutionChain.chain} darkMode={darkMode} />
           </div>
@@ -301,11 +301,11 @@ function getTypeColor(type) {
 function getStatName(statName) {
   const stats = {
     'hp': 'HP',
-    'attack': 'Atak',
-    'defense': 'Obrona',
-    'special-attack': 'Sp. Atak',
-    'special-defense': 'Sp. Obrona',
-    'speed': 'Szybkość'
+    'attack': 'Attack',
+    'defense': 'Defense',
+    'special-attack': 'Sp. Attack',
+    'special-defense': 'Sp. Defense',
+    'speed': 'Speed'
   };
   
   return stats[statName] || statName;

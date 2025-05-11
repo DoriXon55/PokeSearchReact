@@ -1,7 +1,6 @@
 import React from 'react';
 import PokemonCard from './PokemonCard';
 
-// Add darkMode to props
 const PokemonList = ({ 
   pokemons, 
   loading, 
@@ -46,7 +45,7 @@ const PokemonList = ({
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
           >
-            Poprzednia strona
+            Previous Page
           </button>
 
           <button
@@ -58,7 +57,7 @@ const PokemonList = ({
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
           >
-            Następna strona
+            Next Page
           </button>
         </div>
       )}

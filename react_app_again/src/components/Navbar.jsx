@@ -62,7 +62,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
                   </Link>
 
                   <button onClick={() => {logout(); setShowDropdown(false);}} className={`block w-full text-left px-4 py-2 ${darkMode ? "hover:bg-gray-600" : "hover:bg-gray-100"}`}>
-                    Wyloguj
+                    Log out
                   </button>
                 </div>
               )} 
@@ -77,7 +77,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
                     : "bg-blue-500 hover:bg-blue-600 text-white"
                 }`}
               >
-                Zaloguj
+                Log In
               </Link>
               <Link 
                 to="/register"
@@ -87,7 +87,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
                     : "bg-gray-200 hover:bg-gray-300 text-gray-800"
                 }`}
               >
-                Zarejestruj
+                Register
               </Link>
             </div>
           )}

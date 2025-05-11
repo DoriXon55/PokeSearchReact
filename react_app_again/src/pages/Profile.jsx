@@ -19,10 +19,10 @@ const Profile = ({ darkMode }) => {
     
     try {
       await api.put('/api/users/me', { email });
-      setSuccess('Profil został zaktualizowany');
+      setSuccess('The profile has been updated');
       setIsEditing(false);
     } catch (err) {
-      setError(err.response?.data || 'Wystąpił błąd podczas aktualizacji profilu');
+      setError(err.response?.data || 'An error occurred while updating your profile');
     } finally {
       setIsLoading(false);
     }
@@ -31,7 +31,7 @@ const Profile = ({ darkMode }) => {
   return (
     <div className="max-w-2xl mx-auto">
       <h2 className={`text-2xl font-bold mb-6 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
-        Mój profil
+        My Profile
       </h2>
       
       {error && (
@@ -49,7 +49,7 @@ const Profile = ({ darkMode }) => {
       <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} p-6 rounded-lg shadow-md mb-6`}>
         <div className="flex justify-between items-center mb-4">
           <h3 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-700'}`}>
-            Informacje o koncie
+          Account information
           </h3>
           <button
             onClick={() => setIsEditing(!isEditing)}
@@ -67,7 +67,7 @@ const Profile = ({ darkMode }) => {
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label className={`block mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                Nazwa użytkownika
+                Username
               </label>
               <input
                 type="text"
@@ -78,7 +78,7 @@ const Profile = ({ darkMode }) => {
                 } border ${darkMode ? 'border-gray-600' : 'border-gray-300'} opacity-75`}
               />
               <p className="mt-1 text-sm text-gray-500">
-                Nazwa użytkownika nie może być zmieniona
+                Username cannot be changed
               </p>
             </div>
             
@@ -113,7 +113,7 @@ const Profile = ({ darkMode }) => {
           <div>
             <div className="mb-4">
               <span className={`block text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                Nazwa użytkownika
+                Username
               </span>
               <span className={`block text-lg ${darkMode ? 'text-white' : 'text-gray-800'}`}>
                 {user?.username || 'N/A'}
@@ -131,7 +131,7 @@ const Profile = ({ darkMode }) => {
             
             <div className="mb-4">
               <span className={`block text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                Data dołączenia
+              Date of joining
               </span>
               <span className={`block text-lg ${darkMode ? 'text-white' : 'text-gray-800'}`}>
                 {user?.createdAt 

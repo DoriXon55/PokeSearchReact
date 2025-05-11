@@ -9,12 +9,11 @@ const Favorites = ({ darkMode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Funkcja pomocnicza do bezpiecznego formatowania daty
   const formatDate = (dateString) => {
-    if (!dateString) return 'Data niedostępna';
+    if (!dateString) return 'Date unavailable';
     
     const date = new Date(dateString);
-    if (date.toString() === 'Invalid Date') return 'Data niedostępna';
+    if (date.toString() === 'Invalid Date') return 'Date unavailable';
     
     return date.toLocaleDateString();
   };
@@ -25,12 +24,10 @@ const Favorites = ({ darkMode }) => {
       setError('');
       
       try {
-        // 1. Pobierz listę ulubionych pokemonów
         const favoritesResponse = await favoritesApi.getFavoritePokemons();
-        console.log('Dane z API ulubionych:', favoritesResponse.data); // Debug
+        console.log('API favorite:', favoritesResponse.data);
         setFavoritePokemons(favoritesResponse.data);
         
-        // 2. Pobierz szczegóły dla każdego pokemona
         const details = {};
         await Promise.all(
           favoritesResponse.data.map(async (favorite) => {
@@ -38,14 +35,14 @@ const Favorites = ({ darkMode }) => {
               const pokemonResponse = await pokemonApi.getPokemonDetails(favorite.pokemonId);
               details[favorite.pokemonId] = pokemonResponse.data;
             } catch (err) {
-              console.error(`Błąd pobierania szczegółów pokemona o ID: ${favorite.pokemonId}`, err);
+              console.error(`Error getting Pokemon ID details: ${favorite.pokemonId}`, err);
             }
           })
         );
         
         setPokemonDetails(details);
       } catch (err) {
-        setError('Nie udało się pobrać ulubionych pokemonów.');
+        setError('Error - cannot download favorite pokemons');
         console.error(err);
       } finally {
         setIsLoading(false);
@@ -58,10 +55,9 @@ const Favorites = ({ darkMode }) => {
   const handleRemoveFromFavorites = async (pokemonId) => {
     try {
       await favoritesApi.removeFromFavorites(pokemonId);
-      // Aktualizuj stan po usunięciu
       setFavoritePokemons(favoritePokemons.filter(fav => fav.pokemonId !== pokemonId));
     } catch (err) {
-      setError('Wystąpił błąd podczas usuwania pokemona z ulubionych');
+      setError('Error - cannot delete Pokemon');
       console.error(err);
     }
   };
@@ -77,7 +73,7 @@ const Favorites = ({ darkMode }) => {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className={`text-3xl font-bold mb-6 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
-        Ulubione Pokemony
+        Favorite Pokemons
       </h1>
       
       {error && (
@@ -88,9 +84,9 @@ const Favorites = ({ darkMode }) => {
       
       {favoritePokemons.length === 0 ? (
         <div className={`text-center py-10 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-          <p>Nie masz jeszcze żadnych ulubionych pokemonów.</p>
+          <p>You don't have any favorite Pokémon yet.</p>
           <p className="mt-2">
-            Przeglądaj pokemony i dodawaj je do ulubionych klikając gwiazdkę!
+          Browse Pokemon and add them to your favorites by clicking the star!
           </p>
           <Link 
             to="/"
@@ -98,7 +94,7 @@ const Favorites = ({ darkMode }) => {
               darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'
             }`}
           >
-            Przeglądaj Pokemony
+            Browse Pokemons
           </Link>
         </div>
       ) : (
@@ -113,7 +109,7 @@ const Favorites = ({ darkMode }) => {
                   className={`rounded-lg shadow-md p-4 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                 >
                   <p className={`${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                    Ładowanie... (ID: {favorite.pokemonId})
+                    Loading... (ID: {favorite.pokemonId})
                   </p>
                 </div>
               );

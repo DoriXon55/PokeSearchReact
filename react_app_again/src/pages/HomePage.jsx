@@ -43,13 +43,11 @@ const HomePage = ({ darkMode }) => {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-center">Pokédex</h1>
-      {/* Przekaż funkcję searchPokemon jako prop */}
       <SearchBar
         onSearch={handleSearch}
         onReset={handleReset}
         darkMode={darkMode}
       />
-      {/* Przekaż dane i funkcje jako props */}
       <PokemonList
         pokemons={pokemons}
         loading={loading}

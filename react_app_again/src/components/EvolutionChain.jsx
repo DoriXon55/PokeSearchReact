@@ -5,13 +5,11 @@ const EvolutionChain = ({ chain, darkMode }) => {
   const renderEvolutionChain = (chain) => {
     if (!chain) return null;
     
-    // Wyciągnij ID z URL (np. https://pokeapi.co/api/v2/pokemon-species/1/ -> 1)
     const getId = (url) => {
       const parts = url.split('/');
       return parts[parts.length - 2];
     };
 
-    // Funkcja do transformacji drzewa ewolucji w płaską listę
     const flattenEvolutionChain = (node, result = []) => {
       if (!node) return result;
       
@@ -22,7 +20,6 @@ const EvolutionChain = ({ chain, darkMode }) => {
         details: node.evolution_details,
       });
       
-      // Rekurencyjnie dodaj wszystkie ewolucje
       if (node.evolves_to && node.evolves_to.length > 0) {
         node.evolves_to.forEach(evolution => {
           flattenEvolutionChain(evolution, result);

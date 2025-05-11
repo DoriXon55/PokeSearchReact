@@ -83,14 +83,14 @@ const Login = ({ darkMode }) => {
               : 'bg-blue-500 hover:bg-blue-600 text-white'
           } ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
         >
-          {isLoading ? 'Logowanie...' : 'Zaloguj się'}
+          {isLoading ? 'Login...' : 'Log in'}
         </button>
       </form>
       
       <p className={`mt-4 text-center ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-        Nie masz konta?{' '}
+        Don't have an account??{' '}
         <Link to="/register" className="text-blue-500 hover:text-blue-600">
-          Zarejestruj się
+          Register
         </Link>
       </p>
     </div>

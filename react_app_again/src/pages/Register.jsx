@@ -30,16 +30,16 @@ const Register = ({darkMode}) => {
             const success = await register(username, email, password);
             if(success)
             {
-                navigate('/login', {state: { message: 'Konto zostało utworzone. Możesz się zalogować'}});
+                navigate('/login', {state: { message: 'Your account has been created. You can log in'}});
             } else {
-                setError('Wystąpił błąd podczas rejestracji');
+                setError('An error occurred during registration');
             }
         } catch (err) {
             if(err.response && err.response.data)
             {
                 setError(err.response.data);
             } else {
-                setError('Wystąpił błąd podczas rejestracji');
+                setError('An error occurred during registration');
             }
             console.error(err);
         } finally {
@@ -94,7 +94,7 @@ const Register = ({darkMode}) => {
             
             <div className="mb-4">
               <label className={`block mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                Hasło
+                Password
               </label>
               <input
                 type="password"
@@ -109,7 +109,7 @@ const Register = ({darkMode}) => {
             
             <div className="mb-6">
               <label className={`block mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                Potwierdź hasło
+                Confirm Password
               </label>
               <input
                 type="password"
@@ -131,14 +131,14 @@ const Register = ({darkMode}) => {
                   : 'bg-blue-500 hover:bg-blue-600 text-white'
               } ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
-              {isLoading ? 'Rejestracja...' : 'Zarejestruj się'}
+              {isLoading ? 'Registration...' : 'Register'}
             </button>
           </form>
           
           <p className={`mt-4 text-center ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-            Masz już konto?{' '}
+          Already have an account?{' '}
             <Link to="/login" className="text-blue-500 hover:text-blue-600">
-              Zaloguj się
+              Log in
             </Link>
           </p>
         </div>
