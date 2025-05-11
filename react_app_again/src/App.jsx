@@ -1,4 +1,4 @@
-import Footer from './components/Footer'
+import Footer from './components/footer'
 import Navbar from './components/navbar'
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
 import './App.css'
@@ -11,6 +11,11 @@ import Register from './pages/Register'
 import Profile from './pages/Profile'
 import Favorites from './pages/Favorites'
 import PrivateRoute from './components/PrivateRoute'
+import TeamDetail from './pages/TeamDetail'
+import Teams from './pages/Teams'
+import TeamEdit from './pages/TeamEdit'
+
+
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -49,6 +54,34 @@ function App() {
                   </PrivateRoute>
                 } 
               />
+
+                <Route 
+                  path="/teams" 
+                  element={
+                    <PrivateRoute>
+                      <Teams darkMode={darkMode} />
+                    </PrivateRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/teams/:id" 
+                  element={
+                    <PrivateRoute>
+                      <TeamDetail darkMode={darkMode} />
+                    </PrivateRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/teams/:id/edit" 
+                  element={
+                    <PrivateRoute>
+                      <TeamEdit darkMode={darkMode} />
+                    </PrivateRoute>
+                  } 
+                />
+
             </Routes>
           </main>
           <Footer darkMode={darkMode} />

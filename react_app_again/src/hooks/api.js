@@ -1,9 +1,7 @@
 import axios from 'axios';
 
-// Bazowy adres API
-const API_URL = 'http://localhost:8080'; // lub inny adres Twojego API
+const API_URL = 'http://localhost:8080';
 
-// Instancja axios ze wspólną konfiguracją
 const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -11,7 +9,6 @@ const api = axios.create({
   },
 });
 
-// Interceptor dodający token JWT do zapytań
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -23,14 +20,12 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// API pokemonów
 export const pokemonApi = {
   getPokemons: (limit = 20, offset = 0) => api.get(`/api/pokemon?limit=${limit}&offset=${offset}`),
   searchPokemon: (nameOrId) => api.get(`/api/pokemon/search/${nameOrId}`),
   getPokemonDetails: (id) => api.get(`/api/pokemon/${id}`),
 };
 
-// API ulubionych
 export const favoritesApi = {
   getFavoritePokemons: () => api.get('/api/favorite-pokemons'),
   checkIsFavorite: (pokemonId) => api.get(`/api/favorite-pokemons/${pokemonId}`),
@@ -38,7 +33,6 @@ export const favoritesApi = {
   removeFromFavorites: (pokemonId) => api.delete(`/api/favorite-pokemons/${pokemonId}`),
 };
 
-// API zespołów
 export const teamsApi = {
   getTeams: () => api.get('/api/teams'),
   getTeam: (teamId) => api.get(`/api/teams/${teamId}`),
@@ -46,22 +40,28 @@ export const teamsApi = {
   updateTeam: (teamId, name) => api.put(`/api/teams/${teamId}`, { name }),
   deleteTeam: (teamId) => api.delete(`/api/teams/${teamId}`),
   
-  // Pokemony w zespole
-  getTeamPokemons: (teamId) => api.get(`/api/teams/${teamId}/pokemons`),
-  addPokemonToTeam: (teamId, pokemonId, position) => 
-    api.post(`/api/teams/${teamId}/pokemons`, { pokemonId, position }),
-  removePokemonFromTeam: (teamId, position) => 
-    api.delete(`/api/teams/${teamId}/pokemons/${position}`),
+
+  
+  getTeamPokemons: async (teamId) => {
+    return await api.get(`/api/teams/${teamId}/pokemons`);
+  },
+  addPokemonToTeam: async (teamId, pokemonId, position) => {
+    return await api.post(`/api/teams/${teamId}/pokemon`, {
+      pokemonId: pokemonId,
+      position: position
+    });
+  },
+  removePokemonFromTeam: async (teamId, position) => {
+    return await api.delete(`/api/teams/${teamId}/pokemon/${position}`);
+  },
 };
 
-// API użytkowników
 export const userApi = {
   getCurrentUser: () => api.get('/api/users/me'),
   updateProfile: (userData) => api.put('/api/users/me', userData),
   changePassword: (newPassword) => api.put('/api/users/me/password', { newPassword }),
 };
 
-// API autentykacji
 export const authApi = {
   login: (username, password) => 
     api.post('/api/auth/login', { username, password }),
