@@ -46,13 +46,17 @@ export const teamsApi = {
     return await api.get(`/api/teams/${teamId}/pokemons`);
   },
   addPokemonToTeam: async (teamId, pokemonId, position) => {
-    return await api.post(`/api/teams/${teamId}/pokemon`, {
+    const backendPosition = position + 1;
+    
+    return await api.post(`/api/teams/${teamId}/pokemons`, {
       pokemonId: pokemonId,
-      position: position
+      position: backendPosition  
     });
   },
+  
   removePokemonFromTeam: async (teamId, position) => {
-    return await api.delete(`/api/teams/${teamId}/pokemon/${position}`);
+    const backendPosition = position + 1;
+    return await api.delete(`/api/teams/${teamId}/pokemons/${backendPosition}`);
   },
 };
 

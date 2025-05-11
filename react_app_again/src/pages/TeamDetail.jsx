@@ -15,33 +15,53 @@ const TeamDetail = ({ darkMode }) => {
     const fetchTeamDetails = async () => {
       try {
         setLoading(true);
-        // Pobierz informacje o drużynie
         const teamResponse = await teamsApi.getTeam(id);
         setTeam(teamResponse.data);
-
-        // Pobierz pokemony w drużynie
+  
         const pokemonsResponse = await teamsApi.getTeamPokemons(id);
+        console.log("Otrzymane pokemony z API:", pokemonsResponse.data);
         
-        // Tworzenie tablicy 6 slotów (null oznacza pusty slot)
         const pokemonSlots = Array(6).fill(null);
         
-        // Wypełnij sloty pokemonami z odpowiedzi API
-        for (const pokemon of pokemonsResponse.data) {
-          if (pokemon.position >= 0 && pokemon.position < 6) {
-            // Pobierz szczegóły pokemona, jeśli mamy tylko ID
-            try {
-              const pokemonDetails = await pokemonApi.getPokemonDetails(pokemon.pokemonId);
-              pokemonSlots[pokemon.position] = {
-                ...pokemon,
-                details: pokemonDetails.data
-              };
-            } catch (err) {
-              console.error(`Error fetching details for pokemon ${pokemon.pokemonId}:`, err);
-              pokemonSlots[pokemon.position] = pokemon;
+        if (pokemonsResponse.data && Array.isArray(pokemonsResponse.data)) {
+          for (const pokemon of pokemonsResponse.data) {
+            if (typeof pokemon.position !== 'number' || !pokemon.pokemonId) {
+              console.warn('Pokemon bez poprawnej pozycji lub ID:', pokemon);
+              continue;
+            }
+            
+            const frontendPosition = pokemon.position - 1;
+            
+            if (frontendPosition >= 0 && frontendPosition < 6) {
+              try {
+                const pokemonDetails = await pokemonApi.getPokemonDetails(pokemon.pokemonId);
+                
+                if (pokemonDetails.data) {
+                  pokemonSlots[frontendPosition] = {
+                    ...pokemon,
+                    position: frontendPosition,
+                    details: pokemonDetails.data
+                  };
+                } else {
+                  pokemonSlots[frontendPosition] = {
+                    ...pokemon,
+                    position: frontendPosition,
+                    details: { name: `Pokemon #${pokemon.pokemonId}` }
+                  };
+                }
+              } catch (err) {
+                console.error(`Error fetching details for pokemon ${pokemon.pokemonId}:`, err);
+                pokemonSlots[frontendPosition] = {
+                  ...pokemon,
+                  position: frontendPosition,
+                  details: { name: `Pokemon #${pokemon.pokemonId}` }
+                };
+              }
             }
           }
         }
         
+        console.log("Przetworzone sloty pokemonów:", pokemonSlots);
         setPokemons(pokemonSlots);
       } catch (err) {
         console.error('Error fetching team details:', err);
@@ -50,7 +70,7 @@ const TeamDetail = ({ darkMode }) => {
         setLoading(false);
       }
     };
-
+  
     fetchTeamDetails();
   }, [id]);
 
@@ -60,9 +80,9 @@ const TeamDetail = ({ darkMode }) => {
     if (window.confirm('Czy na pewno chcesz usunąć tego Pokemona z drużyny?')) {
       try {
         setLoading(true);
+        console.log("Usuwanie pokemona z pozycji:", position, "backend position:", position + 1);
         await teamsApi.removePokemonFromTeam(id, position);
         
-        // Aktualizuj lokalnie
         const updatedPokemons = [...pokemons];
         updatedPokemons[position] = null;
         setPokemons(updatedPokemons);
