@@ -52,7 +52,7 @@ const Register = ({darkMode}) => {
     return (
         <div className="max-w-md mx-auto mt-10">
           <h2 className={`text-2xl font-bold mb-6 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
-            Rejestracja
+            Register
           </h2>
           
           {error && (
@@ -64,7 +64,7 @@ const Register = ({darkMode}) => {
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label className={`block mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                Nazwa użytkownika
+                Username
               </label>
               <input
                 type="text"

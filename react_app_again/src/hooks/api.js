@@ -63,7 +63,13 @@ export const teamsApi = {
 export const userApi = {
   getCurrentUser: () => api.get('/api/users/me'),
   updateProfile: (userData) => api.put('/api/users/me', userData),
-  changePassword: (newPassword) => api.put('/api/users/me/password', { newPassword }),
+  changePassword: (passwordData) => api.put('/api/users/me/password', passwordData),
+};
+
+export const passwordApi = {
+  requestReset: (email) => api.post('/api/password/reset-request', {email}),
+  verifyCode: (token, code) => api.post('/api/password/verify-code', {token, code}),
+  resetPassword: (token, code, newPassword) => api.post('/api/password/reset', {token, code, newPassword})
 };
 
 export const authApi = {
