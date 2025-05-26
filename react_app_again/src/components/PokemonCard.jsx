@@ -7,7 +7,7 @@ const PokemonCard = ({ pokemon, darkMode }) => {
     return null; 
   }
   
-  const imageUrl = pokemon.sprites?.front_default || placeholderImage;
+  const imageUrl = pokemon.frontDefaultSprite || placeholderImage;
   
   return (
     <Link to={`/pokemon/${pokemon.id}`} className="block w-full no-underline">
@@ -39,10 +39,10 @@ const PokemonCard = ({ pokemon, darkMode }) => {
         <h2 className="text-xl capitalize mt-2 font-medium">{pokemon.name}</h2>
 
         <div className="flex gap-2 mt-2">
-          {pokemon.types && pokemon.types.map((typeInfo) => (
+          {pokemon.pokemon_v2_pokemontypes && pokemon.pokemon_v2_pokemontypes.map((typeEntry) => (
             <TypeIcon 
-              key={typeof typeInfo === 'string' ? typeInfo : typeInfo.type?.name}
-              type={typeof typeInfo === 'string' ? typeInfo : typeInfo.type?.name} 
+              key={typeEntry?.pokemon_v2_type?.name}
+              type={typeEntry?.pokemon_v2_type?.name} 
             />
           ))}
         </div>

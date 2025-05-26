@@ -103,7 +103,6 @@ const TeamEdit = ({ darkMode }) => {
       setSearchError("");
       const response = await pokemonApi.searchPokemon(query.toLowerCase());
 
-      // Obsługa różnych formatów odpowiedzi
       if (Array.isArray(response.data)) {
         setSearchResults(response.data);
       } else {
@@ -223,7 +222,6 @@ const TeamEdit = ({ darkMode }) => {
   };
 
   const handleSaveChanges = async () => {
-    // Zapisz nazwę drużyny, jeśli się zmieniła
     if (teamName !== team?.name) {
       await updateTeamName();
     }
@@ -401,7 +399,7 @@ const TeamEdit = ({ darkMode }) => {
               )}
 
               {!searchLoading && searchResults.length > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-4">
+                <div className="flex justify-center sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-4">
                   {searchResults.map((pokemon) => (
                     <div
                       key={pokemon.id}

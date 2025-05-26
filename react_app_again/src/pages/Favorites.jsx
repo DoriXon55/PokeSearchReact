@@ -35,7 +35,7 @@ const Favorites = ({ darkMode }) => {
               const pokemonResponse = await pokemonApi.getPokemonDetails(favorite.pokemonId);
               details[favorite.pokemonId] = pokemonResponse.data;
             } catch (err) {
-              console.error(`Error getting Pokemon ID details: ${favorite.pokemonId}`, err);
+              console.error(`Error getting Pokemon ID details: ${favorite.pokemonId}`, err.response.data);
             }
           })
         );
@@ -43,7 +43,7 @@ const Favorites = ({ darkMode }) => {
         setPokemonDetails(details);
       } catch (err) {
         setError('Error - cannot download favorite pokemons');
-        console.error(err);
+        console.error(err.response.data);
       } finally {
         setIsLoading(false);
       }
