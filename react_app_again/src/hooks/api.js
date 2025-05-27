@@ -23,7 +23,7 @@ api.interceptors.request.use(
 export const pokemonApi = {
   getPokemons: (limit = 20, offset = 0) => api.get(`/api/pokemon/graphql/list?limit=${limit}&offset=${offset}`),
   searchPokemon: (nameOrId) => api.get(`/api/pokemon/graphql/search/${nameOrId}`),
-  getPokemonDetails: (id) => api.get(`/api/pokemon/${id}`),
+  getPokemonDetails: (id) => api.get(`api/pokemon/graphql/${id}`),
 };
 
 export const favoritesApi = {

@@ -6,6 +6,9 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import EvolutionChain from '../components/EvolutionChain'
 import axios from 'axios'; 
 
+
+
+//TODO dostosowanie tego pod graphql ze spring
 const PokemonDetails = ({ darkMode }) => {
   const { id } = useParams();
   const { isAuthenticated } = useAuth();
